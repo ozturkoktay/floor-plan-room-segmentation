@@ -1,26 +1,26 @@
 # Floor Plan Room Semantic Segmentation
 
 ## Overview
-This project focuses on the semantic segmentation of floor plans using deep learning. The model is trained to classify different components of a floor plan, such as rooms, walls, doors, and windows, using a U-Net architecture with a ResNet encoder. The dataset consists of floor plan images and corresponding segmentation masks, preprocessed and augmented for training.
+This project focuses on semantic segmentation of floor plans using deep learning techniques. The model classifies different components of a floor plan such as rooms, walls, doors, and windows using a U-Net architecture with a ResNet encoder. The dataset comprises floor plan images and corresponding segmentation masks, which are preprocessed and augmented for training.
 
 ## Features
-- Implements **U-Net** with **ResNet** encoder using **segmentation_models_pytorch**.
-- Utilizes **Albumentations** for data augmentation.
-- Supports **K-Fold Cross-Validation**.
-- Evaluates model performance using **Precision, Recall, F1-Score, Dice Score, and mAP (Mean Average Precision)**.
-- Detects room instances with **bounding box extraction and confidence scoring**.
-- Provides **visualization tools** for debugging predictions.
-- Implements **early stopping** and **learning rate scheduling** for efficient training.
+- **Deep Learning Architecture**: Implements **U-Net** with **ResNet** encoder using `segmentation_models_pytorch`.
+- **Advanced Data Augmentation**: Utilizes **Albumentations** for enhancing dataset robustness.
+- **K-Fold Cross-Validation**: Ensures reliable model performance evaluation.
+- **Comprehensive Metrics**: Evaluates model performance using **Precision, Recall, F1-Score, Dice Score, and Mean Average Precision (mAP)**.
+- **Instance Detection**: Extracts room instances with **bounding box generation and confidence scoring**.
+- **Visual Analysis Tools**: Enables debugging via detailed image comparisons.
+- **Training Optimizations**: Implements **early stopping** and **learning rate scheduling**.
 
 ## Installation
 ### Dependencies
-Make sure to install the required dependencies:
+Ensure the necessary dependencies are installed:
 ```bash
 pip install segmentation-models-pytorch albumentations opencv-python numba torch torchvision numpy matplotlib scipy
 ```
 
 ## Dataset Structure
-The dataset is expected to be organized as follows:
+The dataset should be structured as follows:
 ```
 mask-semantic/
 │── images/            # Raw input images
@@ -34,39 +34,41 @@ mask-semantic/
 │── _classes.csv       # Class definitions (Pixel Value, Class Name)
 ```
 
-## Training Process
+## Training Pipeline
 ### 1. Data Preparation
-- Reads the `_classes.csv` file to map pixel values to class indices.
+- Parses `_classes.csv` to map pixel values to class indices.
 - Loads images and masks into PyTorch **Dataset** and **DataLoader**.
-- Applies transformations for data augmentation.
+- Applies augmentation transforms for improved generalization.
 
 ### 2. Model Selection
-- Uses `segmentation_models_pytorch` with the **U-Net architecture**.
-- Encoder options: EfficientNet, ResNet, PSPNet, DeepLabV3+.
-- Model initializes with `num_classes` dynamically derived from the dataset.
+- Utilizes `segmentation_models_pytorch` with the **U-Net** architecture.
+- Supports multiple encoders: EfficientNet, ResNet, PSPNet, DeepLabV3+.
+- Dynamically initializes with the detected number of classes.
 
-### 3. Training
+### 3. Training Configuration
 - Uses **CrossEntropyLoss** for multi-class segmentation.
-- Optimizer: **Adam** with learning rate scheduling.
-- Metrics: **Dice coefficient, Precision, Recall, F1-Score, and Accuracy**.
-- Implements **early stopping** based on validation loss.
+- Optimized with **Adam optimizer** and adaptive learning rate scheduling.
+- Performance evaluation through **Dice coefficient, Precision, Recall, F1-Score, and Accuracy**.
+- Implements **early stopping** based on validation loss improvement.
 
 ### 4. K-Fold Cross-Validation
-- Performs **5-Fold cross-validation** to evaluate model generalization.
-- Saves the best model based on validation performance.
+- Uses **5-Fold cross-validation** to improve model generalization.
+- Saves best-performing models based on validation scores.
 
-## Evaluation
-- Calculates **Precision, Recall, F1-Score, and Confusion Matrix**.
-- Implements **mAP (Mean Average Precision) from IoU thresholds**.
-- Visualizes **incorrect predictions** for analysis.
+## Evaluation & Metrics
+- **Pixel-wise Accuracy**: Measures correct pixel classification.
+- **Dice Score**: Evaluates overlap between predictions and ground truth.
+- **Precision, Recall, F1-Score**: Quantifies model reliability.
+- **Confusion Matrix**: Analyzes per-class performance.
+- **mAP (Mean Average Precision)**: Calculates detection performance across IoU thresholds.
 
-## Model Inference & Room Detection
+## Room Detection & Bounding Boxes
 - Loads trained model weights from a `.pth` file.
-- Identifies connected components for `room` class.
-- Generates **bounding boxes and confidence scores** for detected rooms.
-- Outputs results in **JSON format**.
+- Extracts **connected components** for `room` class.
+- Generates **bounding boxes and confidence scores**.
+- Saves results as **JSON output**.
 
-## Example Output
+### Example Output
 ```json
 {
   "predictions": [
@@ -84,30 +86,37 @@ mask-semantic/
 }
 ```
 
-## Visualization Tools
+## Visualization & Debugging
 - Displays **input images, ground truth masks, and predicted masks**.
 - Highlights **room instances with bounding boxes**.
-- Applies **morphological erosion** to refine predictions.
+- Applies **morphological erosion** for mask refinement.
 - Supports **interactive visualization** using Matplotlib.
 
-## Saving & Loading the Model
+## Predicted Rooms with Erosion Operation
+![alt text](output/1.png)
+
+## Segmented Rooms
+![alt text](output/segmented.png)
+
+
+## Model Checkpointing
 ```python
-# Save the trained model
+# Save trained model
 torch.save(model.state_dict(), "unet_floorplan_multiclass.pth")
 
-# Load the trained model
+# Load trained model
 model.load_state_dict(torch.load("unet_floorplan_multiclass.pth"))
 model.eval()
 ```
 
-## Results & Performance
-- The model achieves high **Dice scores** and **mAP** for room segmentation.
-- Visualization of incorrect predictions helps improve model performance.
+## Performance Summary
+- The model achieves high **Dice scores** and 93.59% **mAP** for room segmentation.
+- Visualization techniques provide insights into error patterns.
 
 ## Future Improvements
-- Train on a larger dataset for better generalization.
-- Experiment with **self-supervised learning** for pretraining.
-- Implement **active learning** to improve annotation efficiency.
+- Train with larger, more diverse datasets.
+- Experiment with **self-supervised pretraining**.
+- Implement **active learning** for enhanced annotations.
 
 ## License
 MIT License
